@@ -9,18 +9,6 @@ var path = require('path');
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// use res.render to load up an ejs view file
-
-// index page 
-// app.get('/', function(req, res) {
-//     res.render('/', routes);
-// });
-/* 
-// about page 
-app.get('/about', function(req, res) {
-    res.render('pages/about');
-});
-*/
 
 app.use('/', routes)
 app.use(express.static(__dirname + '/views'));

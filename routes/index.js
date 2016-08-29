@@ -1,10 +1,10 @@
-var express = require('express');
-var router = express.Router();
+let express = require('express');
+let router = express.Router();
 
 const firebase = require('firebase');
 
 // Setup and Initialize Firebase
-var config = {
+let config = {
     apiKey: process.env.FIREBASE_APIKEY,
     authDomain: process.env.FIREBASE_AUTHDOMAIN,
     databaseURL: process.env.FIREBASE_DATABASEURL,
@@ -13,8 +13,6 @@ var config = {
 
 firebase.initializeApp(config);
 const db = firebase.database();
-
-
 
 
 /**
@@ -84,8 +82,8 @@ function getSubTaskData(subTaskID) {
  * @return the saved project key
  */
 function saveProject(name, description) {
-    var userRef = db.ref(`/users/${global.currentUserID}/projects`);
-    var projectRef = db.ref("/projects").push({
+    let userRef = db.ref(`/users/${global.currentUserID}/projects`);
+    let projectRef = db.ref("/projects").push({
         name: name,
         description: description,
         start_time: new Date().toISOString(),
@@ -106,8 +104,8 @@ function saveProject(name, description) {
  * @param projectID, title, description
  */
 function saveTask(projectID, title, description) {
-    var projectRef = db.ref(`/projects/${projectID}/tasks`);
-    var taskRef = db.ref('/tasks').push({
+    let projectRef = db.ref(`/projects/${projectID}/tasks`);
+    let taskRef = db.ref('/tasks').push({
         title: title,
         description: description,
         completed: false,
@@ -129,8 +127,8 @@ function saveTask(projectID, title, description) {
  * @param taskID, title, description
  */
 function saveSubTask(taskID, title, description) {
-    var taskRef = db.ref(`/tasks/${taskID}/subtasks`);
-    var subtaskRef = db.ref('/subtasks').push({
+    let taskRef = db.ref(`/tasks/${taskID}/subtasks`);
+    let subtaskRef = db.ref('/subtasks').push({
         title: title,
         description: description
     });
@@ -197,7 +195,7 @@ router.get('/register', function (req, res, next) {
 router.get('/projects', function (req, res, next) {
     // Check to see if a user is actually logged in
     if (global.currentUser) {
-        var projectsRef = db.ref(`/users/${global.currentUserID}/projects`);
+        let projectsRef = db.ref(`/users/${global.currentUserID}/projects`);
         
         // Get the user's projects, returns an object of the projects ID's  or an empty array if none exists
         projectsRef.once("value")
@@ -207,11 +205,10 @@ router.get('/projects', function (req, res, next) {
                 }
                 
                 // Saves the projectIDs as an array 
-                var projectKeys = Object.keys(snapshot.val());
-                debugger;
+                let projectKeys = Object.keys(snapshot.val());
 
                 // Maps through the projectKeys to generate the projects data, return an array of the projectKey and data
-                var dataPromises = projectKeys.map(function (projectKey) {
+                let dataPromises = projectKeys.map(function (projectKey) {
                     return getProjectData(projectKey)
                         .then(function(data) {
                             return [generateProjectUrl(projectKey), data];
@@ -248,12 +245,12 @@ router.post('/register', function (req, res) {
         .createUserWithEmailAndPassword(email, password)
         .then(function (userObject) {
             global.currentUser = email;
-            var userID = userObject.uid;
+            let userID = userObject.uid;
             global.currentUserID = userID;
 
-            var db = firebase.database();
-            var ref = db.ref("/");
-            var usersRef = ref.child("users");
+            let db = firebase.database();
+            let ref = db.ref("/");
+            let usersRef = ref.child("users");
             usersRef.set({
                 [userID]: {
                     joined: new Date().toISOString()
@@ -263,8 +260,8 @@ router.post('/register', function (req, res) {
             res.redirect('/projects');
         })
         .catch(function (error) {
-            var errorCode = error.code;
-            var errorMessage = error.message;
+            let errorCode = error.code;
+            let errorMessage = error.message;
             if (errorMessage) {
                 return res.send(errorMessage);
             }
@@ -302,7 +299,7 @@ router.post('/projects', function (req, res) {
         return res.send("Provide a valid project title and description!");
     }
 
-    var projectKey = saveProject(projectTitle, projectDescription)
+    let projectKey = saveProject(projectTitle, projectDescription)
    
    // Redirect to the particular project dashboard
     return res.redirect(generateProjectUrl(projectKey));
@@ -313,16 +310,16 @@ router.post('/projects', function (req, res) {
  */
 router.get('/project/:projectID', function (req, res) {
     // get the project id from the url scheme
-    var projectID = req.params.projectID;
+    let projectID = req.params.projectID;
 
     // Fetch the project data
     getProjectData(projectID)
         .then(function (projectData) {
-            var sprintLevel = projectData.sprint_level || 1;
-            var sprintTasks = projectData.tasks || [];
+            let sprintLevel = projectData.sprint_level || 1;
+            let sprintTasks = projectData.tasks || [];
 
             // We need an array of task keys
-            var taskPromises = Object.keys(sprintTasks) 
+            let taskPromises = Object.keys(sprintTasks) 
                 .filter(function (taskKey) {
                     return sprintTasks[taskKey] === sprintLevel; // Pick only keys for tasks in the current sprint
                 })
@@ -337,17 +334,16 @@ router.get('/project/:projectID', function (req, res) {
             return Promise.all([sprintLevel, projectData, ...taskPromises]); // We return the sprint level and array of tasks
         })
         .then(function (data) {
-            var [sprintLevel, projectData, ...tasks] = data; // Destructure the array as we constructed.
+            let [sprintLevel, projectData, ...tasks] = data; // Destructure the array as we constructed.
 
-            var taskMutationPromises = tasks.map(function ([url, task]) {
+            let taskMutationPromises = tasks.map(function ([url, task]) {
                 // Populate Subtask for each task
-                var subtasks = task.subtasks || [];
+                let subtasks = task.subtasks || [];
                 
-                var subtaskPromises = Object.keys(subtasks)
+                let subtaskPromises = Object.keys(subtasks)
                     .map(function (subtaskID) {
                         return getSubTaskData(subtaskID)
                             .then(function (data) {
-                                // Nasty mutation
                                 data.completed = task.subtasks[subtaskID]; // Get the value of the subtask for whether the project is completed or not.
 
                                 return [generateSubTaskUrl(url, subtaskID), data];
@@ -365,9 +361,9 @@ router.get('/project/:projectID', function (req, res) {
             return Promise.all([sprintLevel, projectData, ...taskMutationPromises]);
         })
         .then(function (data) {
-            var [sprintLevel, projectData, ...tasks] = data; // Destructure the array as we constructed.
+            let [sprintLevel, projectData, ...tasks] = data; // Destructure the array as we constructed.
 
-            var url = req.url;
+            let url = req.url;
             res.render('project-details', { title: 'TODO: Projects', projectData, url, sprintLevel, tasks });
         })
     // .catch(function (error) {
@@ -393,10 +389,10 @@ router.get('/project/:projectID/delete', function (req, res) {
  * Adding a new task
  */
 router.post('/project/:projectID/task', function (req, res) {
-    var projectID = req.params.projectID;
+    let projectID = req.params.projectID;
     //Todo: Checks.
-    var taskTitle = req.body.title;
-    var taskDescription = req.body.description.trim();
+    let taskTitle = req.body.title;
+    let taskDescription = req.body.description.trim();
 if (!(Boolean(taskTitle) && Boolean(taskDescription))) {
         return res.send("Provide valid title and description!");
     }
@@ -409,12 +405,12 @@ if (!(Boolean(taskTitle) && Boolean(taskDescription))) {
 router.get('/project/:projectID/next', function (req, res) {
     // Next Sprint
 
-    var projectID = req.params.projectID;
+    let projectID = req.params.projectID;
 
     // Todo: Mark all tasks in this sprint as complete.
     getProjectData(projectID)
         .then(function (projectData) {
-            var sprintLevel = projectData.sprint_level || 1;
+            let sprintLevel = projectData.sprint_level || 1;
 
             if (sprintLevel === 4) {
                 return res.redirect(`/project/${projectID}/report`);
@@ -432,8 +428,8 @@ router.get('/project/:projectID/next', function (req, res) {
  * Completing a task
  */
 router.get('/project/:projectID/:taskID/done', function (req, res) {
-    var projectID = req.params.projectID;
-    var taskID = req.params.taskID;
+    let projectID = req.params.projectID;
+    let taskID = req.params.taskID;
 
     db.ref(`/tasks/${taskID}`).update({
         completed: true,
@@ -448,11 +444,11 @@ router.get('/project/:projectID/:taskID/done', function (req, res) {
  */
 router.post('/project/:projectID/:taskID/subtask', function (req, res) {
    
-    var projectID = req.params.projectID;
-    var taskID = req.params.taskID;
+    let projectID = req.params.projectID;
+    let taskID = req.params.taskID;
 
-    var title = req.body.title;
-    var description = req.body.description.trim();
+    let title = req.body.title;
+    let description = req.body.description.trim();
 
  if (!(Boolean(title) && Boolean(description))) {
         return res.send("Provide valid title and description!");
@@ -466,9 +462,9 @@ router.post('/project/:projectID/:taskID/subtask', function (req, res) {
 
 /** Completing a subtask */
 router.post('/project/:projectID/:taskID/:subtaskID/done', function(req, res) {
-    var projectID = req.params.projectID;
-    var taskID = req.params.taskID;
-    var subtask = req.params.subtaskID;
+    let projectID = req.params.projectID;
+    let taskID = req.params.taskID;
+    let subtask = req.params.subtaskID;
     db.ref(`/tasks/${taskID}/subtasks`).update({
         [subtask]: true
     });

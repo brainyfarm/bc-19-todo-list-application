@@ -11,7 +11,7 @@
     "url": "git+https://github.com/brainyfarm/bc-19-todo-list-application.git"
   },
   "author": "Olawale Akinseye",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/brainyfarm/bc-19-todo-list-application/issues"
   },

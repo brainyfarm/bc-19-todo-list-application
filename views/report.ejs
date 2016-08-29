@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <% include partial/head %>
+        <title>
+            <%= title %>
+        </title>
+</head>
+
+<body>
+        <% include partial/report-page-nav %>
+        <% include partial/extra-scripts %>
+        <div class="row">
+
+        <div class="col s4">
+        </div>
+
+
+        <div class="col s4">
+        <canvas id="myChart" width="250px" height="250px"></canvas>
+        </div>
+
+        </div>
+
+        <div class="row">
+        <div class="s12 center">
+            <p>Number of tasks : 4</p>
+            <p>Average completion time : 4 minutes</p>
+        </div>
+        </div>
+
+
+        <script>
+        // Any of the following formats may be used
+        var ctx = document.getElementById("myChart");
+        // var ctx = document.getElementById("myChart").getContext("2d");
+        // var ctx = $("#myChart");
+
+        var data = {
+    labels: ["Task1", "Task2", "Task3dffddfdfdfdfdfdfdfdfdfdfd", "Task4"],
+    datasets: [
+        {
+            label: "Project Get a Phone",
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            data: [65, 59, 80, 81],
+            borderWidth: 1
+        }
+    ]
+};
+
+        var myBarChart = new Chart(ctx, {
+            type: 'bar',
+            data: data
+        });
+
+        $("#number-of-tasks").html("Number of tasks : 4 <br />");
+        $("#average-completion-time").html("Average completion time : 4 minutes");
+        </script>
+
+
+</body>
+
+</html>

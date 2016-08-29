@@ -1,0 +1,16 @@
+<div id="taskModal" class="modal">
+    <div class="modal-content">
+        <h5>New Task </h5>
+        <form action="<%= url %>/task" method="POST">
+            <div class="input-field col">
+                <input name="title" value="" id="task_title" type="text" class="validate">
+                <label class="active" for="task_title">Task Title</label>
+            </div>
+            <div class="input-field col">
+                <textarea name="description" id="task_description" class="materialize-textarea"></textarea>
+                <label for="task_description">Task Description</label>
+            </div>
+            <button class="btn btn-large teal white-text">Add Task</button>
+        </form>
+    </div>
+</div>

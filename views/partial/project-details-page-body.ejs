@@ -1,0 +1,155 @@
+<div class="container">
+    <div class="row center details">
+        <h4 class="teal-text uppercase">
+            <%= projectData.name %>
+        </h4>
+        <p class="teal-text">
+            [
+            <%= projectData.description %> ]
+        </p>
+        <p class="teal-text">
+            <%= new Date(projectData.start_time).toLocaleString() %> &rarr;
+                <%= projectData.end_time || "Now" %>
+        </p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col s12 m3">
+        <div class="card darken-2">
+            <div class="card-content <%= sprintLevel === 1 ? '' : 'brown' %> grey-text">
+                <span class="card-title">Sprint 1</span>
+                <% if (sprintLevel === 1) { %>
+                    <p>No of Tasks:
+                        <%= tasks.length %>
+                    </p>
+                    <% } %>
+            </div>
+            <% if (sprintLevel === 1) { %>
+                <div class="card-action">
+                    <a class="task-modal-trigger" href="#taskModal">Add Task</a>
+                    <a href="<%= url %>/next">Finish Sprint</a>
+                </div>
+                <% } %>
+        </div>
+    </div>
+
+    <div class="col s12 m3">
+        <div class="card <%= sprintLevel === 2 ? '' : 'brown' %> darken-2">
+            <div class="card-content grey-text">
+                <span class="card-title">Sprint 2</span>
+                <% if (sprintLevel === 2) { %>
+                    <p>No of Tasks:
+                        <%= tasks.length %>
+                    </p>
+                    <% } %>
+            </div>
+            <% if (sprintLevel === 2) { %>
+                <div class="card-action">
+                    <a class="task-modal-trigger" href="#taskModal">Add Task</a>
+                    <a href="<%= url %>/next">Finish Sprint</a>
+                </div>
+                <% } %>
+        </div>
+    </div>
+
+    <div class="col s12 m3">
+        <div class="card <%= sprintLevel === 3 ? '' : 'brown' %> darken-2">
+            <div class="card-content grey-text">
+                <span class="card-title">Sprint 3</span>
+                <% if (sprintLevel === 3) { %>
+                    <p>No of Tasks:
+                        <%= tasks.length %>
+                    </p>
+                    <% } %>
+            </div>
+            <% if (sprintLevel === 3) { %>
+                <div class="card-action">
+                    <a class="task-modal-trigger" href="#taskModal">Add Task</a>
+                    <a href="<%= url %>/next">Finish Sprint</a>
+                </div>
+                <% } %>
+        </div>
+    </div>
+
+    <div class="col s12 m3">
+        <div class="card <%= sprintLevel === 4 ? '' : 'brown' %> darken-2">
+            <div class="card-content grey-text">
+                <span class="card-title">Sprint 4</span>
+                <% if (sprintLevel === 4) { %>
+                    <p>No of Tasks:
+                        <%= tasks.length %>
+                    </p>
+                    <% } %>
+            </div>
+            <% if (sprintLevel === 4) { %>
+                <div class="card-action">
+                    <a class="task-modal-trigger" href="#taskModal">Add Task</a>
+                    <a href="/report">Finish / Report</a>
+                </div>
+                <% } %>
+        </div>
+    </div>
+</div>
+
+<div>
+    <p class="center-align">
+        <%= tasks.length %> task(s) have been added to this Sprint</p>
+
+    <ul class="collapsible" id="tasks" data-collapsible="accordion">
+        <% tasks.forEach(function([url, task]) { %> 
+        <li>
+            <div class="collapsible-header"><i class="material-icons">apps</i><%= task.title %></div>
+            <div class="collapsible-body">
+                <div class="row" style="margin-bottom: 0;">
+                    <div class="col s8">
+                        <p><%= task.description %></p>
+                    </div>
+                    <% if (!task.completed) { %>
+                    <div class="btn-task-done">
+                        <a href="<%= url %>/subtask" class="subtask btn green darken-2">Add subtask</a>
+                        <a href="<%= url %>/done" class="btn red darken-2">Mark as done</a>
+                    </div>
+                    <% } %>
+                </div>
+                <div class="divider"></div>
+                <ul class="collection">
+                    <% task.subtasks.forEach(function ([subtaskUrl, subtask], index) { %>
+                    <li class="collection-item">
+                        <div><span data-tooltip="<%= subtask.description %>"><%= subtask.title %></span>
+                            <form method="POST" action="<%= subtaskUrl %>/done" class="secondary-content">
+                                <input class="subtask-checkbox" id="subtask_<%= index %>" type="checkbox" <%= subtask.completed ? 'checked disabled' : '' %>  />
+                                <label for="subtask_<%= index %>"></label>
+                            </form>
+                        </div>
+                    </li>
+                    <% }) %>
+                </ul>
+            </div>
+        </li>
+        <% }) %>
+    </ul>
+
+</div>
+
+<% include new-task-modal %>
+
+<script>
+
+    $(document).ready(function() {
+        $('#tasks').on('click', '.subtask', function(event) {
+            event.preventDefault();
+
+            var href = $(this).attr('href');
+            
+            // Reuse new Task modal, change the url to the subtask modal.
+            $('#taskModal h5').text('Add new subtask');
+            $('#taskModal form').attr('action', href);
+            $('#taskModal').openModal()
+        });
+
+        $('#tasks').on('click', '.subtask-checkbox', function(event) {
+            $(this).parent('form')[0].submit()
+        });
+    })
+</script>

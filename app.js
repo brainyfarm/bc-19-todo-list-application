@@ -56,6 +56,7 @@ app.use(function(err, req, res, next) {
 });
 
 
-app.set('port', process.env.PORT || 8080);
+app.listen(8080);
+console.log('Running on port localhost:8080/');
 
 module.exports = app;

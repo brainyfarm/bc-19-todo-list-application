@@ -397,7 +397,9 @@ router.post('/project/:projectID/task', function (req, res) {
     //Todo: Checks.
     var taskTitle = req.body.title;
     var taskDescription = req.body.description.trim();
-
+if (!(Boolean(taskTitle) && Boolean(taskDescription))) {
+        return res.send("Provide valid title and description!");
+    }
     saveTask(projectID, taskTitle, taskDescription)
         .then(function () {
             return res.redirect(generateProjectUrl(projectID));
@@ -445,11 +447,16 @@ router.get('/project/:projectID/:taskID/done', function (req, res) {
  * Adding a subtask
  */
 router.post('/project/:projectID/:taskID/subtask', function (req, res) {
+   
     var projectID = req.params.projectID;
     var taskID = req.params.taskID;
 
     var title = req.body.title;
     var description = req.body.description.trim();
+
+ if (!(Boolean(title) && Boolean(description))) {
+        return res.send("Provide valid title and description!");
+    }
 
     saveSubTask(taskID, title, description)
         .then(function () {
